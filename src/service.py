@@ -1,13 +1,29 @@
 import requests
 import xml.etree.ElementTree as ET
-import xml.sax.saxutils as saxutils
+from datetime import datetime
 
-LOGIN_CMS_URL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms"
+LOGIN_CMS_URL = 'https://wsaahomo.afip.gov.ar/ws/services/LoginCms'
 
 
 class AlreadyAuthenticated(Exception):
     ERROR = 'coe.alreadyAuthenticated'
     pass
+
+
+class TaResponse:
+    def __init__(self, token, sign, expiration):
+        self._token = token
+        self._sign = sign
+        self._expiration = expiration
+
+    def get_token(self):
+        return self._token
+
+    def get_sign(self):
+        return self._sign
+
+    def get_expiration(self):
+        return self._expiration
 
 
 def solicitar_ta(payload: str):
@@ -22,8 +38,8 @@ def solicitar_ta(payload: str):
 
     if(response.status_code == 500):
         fault_element = xml_response[0][0]
-        fault_code = fault_element[0].text
-        fault_string = fault_element[1].text
+        fault_code = fault_element.find('faultcode').text
+        fault_string = fault_element.find('faultstring').text
 
         if(AlreadyAuthenticated.ERROR in fault_code):
             raise AlreadyAuthenticated
@@ -33,8 +49,12 @@ def solicitar_ta(payload: str):
     loginCMSReturn = xml_response[0][0][0]
 
     loginCMSReturnXML = ET.fromstring(loginCMSReturn.text)
-    credentials = loginCMSReturnXML[1]
-    token = credentials[0].text
-    sign = credentials[1].text
 
-    return (token, sign)
+    header = loginCMSReturnXML.find('header')
+    expirationDate = datetime.fromisoformat(header.find('expirationTime').text)
+
+    credentials = loginCMSReturnXML.find('credentials')
+    token = credentials.find('token').text
+    sign = credentials.find('sign').text
+
+    return TaResponse(token, sign, expirationDate)
