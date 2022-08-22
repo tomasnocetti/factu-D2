@@ -1,0 +1,13 @@
+<ns0:Envelope xmlns:ns0="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:ns1="http://xml.apache.org/axis/">
+    <ns0:Body>
+        <ns0:Fault>
+            <faultcode>ns1:coe.alreadyAuthenticated</faultcode>
+            <faultstring>El CEE ya posee un TA valido para el acceso al WSN solicitado</faultstring>
+            <detail>
+                <ns1:exceptionName>gov.afip.desein.dvadac.sua.view.wsaa.LoginFault</ns1:exceptionName>
+                <ns1:hostname>wsaaext1.homo.afip.gov.ar</ns1:hostname>
+            </detail>
+        </ns0:Fault>
+    </ns0:Body>
+</ns0:Envelope>

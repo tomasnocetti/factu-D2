@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Body>
+        <loginCmsResponse xmlns="http://wsaa.view.sua.dvadac.desein.afip.gov">
+            <loginCmsReturn>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;
+    &lt;loginTicketResponse version=&quot;1.0&quot;&gt;
+        &lt;header&gt; &lt;source&gt;CN=wsaahomo, O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239&lt;/source&gt; &lt;destination&gt;SERIALNUMBER=CUIT 20396423295, CN=facturadorv2&lt;/destination&gt;
+            &lt;uniqueId&gt;969180528&lt;/uniqueId&gt;
+            &lt;generationTime&gt;2022-08-17T17:01:45.017-03:00&lt;/generationTime&gt;
+            &lt;expirationTime&gt;2022-08-18T05:01:45.017-03:00&lt;/expirationTime&gt;
+        &lt;/header&gt;
+        &lt;credentials&gt; &lt;token&gt;PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMjM3OTI0NjA5MCIgZ2VuX3RpbWU9IjE2NjA3NjY0NDUiIGV4cF90aW1lPSIxNjYwODA5NzA1Ii8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAzOTY0MjMyOTUsIENOPWZhY3R1cmFkb3J2MiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMzk2NDIzMjk1IiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==&lt;/token&gt; &lt;sign&gt;XPKZDOd3HGJzw088piyw335WDsVZ227jmQIHyYUnps1jTZz1IyciW3CBJddOeg1jkjZFkDTBzxT0Xgh/hyfMJpvHI3O1opTN2PaG21lpqmdMgbR+eJoKPZwcgPwO0Rbos2VeD4kgqiugUYUUa3Yagg2yeqKoTK2HbVMHZU8hfiw=&lt;/sign&gt;
+        &lt;/credentials&gt;
+    &lt;/loginTicketResponse&gt;
+            </loginCmsReturn>
+        </loginCmsResponse>
+    </soapenv:Body>
+</soapenv:Envelope>
