@@ -21,7 +21,8 @@ class AuthSession():
         expiration_time_item = datetime.fromisoformat(
             auth.find('expirationTime').text)
 
-        current_date = datetime.now()
+        current_date = datetime.today().astimezone()
+
         if (expiration_time_item < current_date):
             raise ExpiredAuth
 
