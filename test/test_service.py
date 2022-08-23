@@ -1,7 +1,7 @@
 # tests.py
 from unittest import TestCase, main, mock
 
-from src.service import AlreadyAuthenticated, solicitar_ta
+from src.service import AlreadyAuthenticated, request_ta
 
 
 class ServiceTest(TestCase):
@@ -14,7 +14,7 @@ class ServiceTest(TestCase):
         my_mock_response.content = response
         mock_post.return_value = my_mock_response  # 5
 
-        response = solicitar_ta("payload")
+        response = request_ta("payload")
 
         assert(
             response.get_token() == 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMjM3OTI0NjA5MCIgZ2VuX3RpbWU9IjE2NjA3NjY0NDUiIGV4cF90aW1lPSIxNjYwODA5NzA1Ii8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAzOTY0MjMyOTUsIENOPWZhY3R1cmFkb3J2MiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMzk2NDIzMjk1IiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==')
@@ -33,7 +33,7 @@ class ServiceTest(TestCase):
         mock_post.return_value = my_mock_response
 
         with self.assertRaises(AlreadyAuthenticated):
-            solicitar_ta("payload")
+            request_ta("payload")
 
 
 if __name__ == "__main__":

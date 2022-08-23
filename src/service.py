@@ -26,7 +26,7 @@ class TaResponse:
         return self._expiration
 
 
-def solicitar_ta(payload: str):
+def request_ta(payload: str):
 
     headers = {'content-type': 'text/xml',
                'charset': 'utf-8', 'SOAPAction': 'urn:LoginCms'}
