@@ -1,9 +1,7 @@
-# tests.py
-import os
 from unittest import TestCase, main, mock
 
-from src.auth import AuthSession, TMP_AUTH_RES
-from datetime import datetime
+from src.auth import AuthSession, ExpiredAuth
+from datetime import datetime, timedelta
 
 
 class AuthTest(TestCase):
@@ -18,6 +16,7 @@ class AuthTest(TestCase):
     def test_save_auth_from_file(self, m):
         token = 'DEMO'
         sign = 'SIGN'
+
         time = datetime.now()
         auth = AuthSession(token, sign, time)
         auth.save_auth_to_file()
@@ -31,10 +30,20 @@ class AuthTest(TestCase):
             '</authData>')
 
     def test_retrieve_auth_from_file_raises_expired_error(self):
-        pass
+        delta = timedelta(minutes=20)
 
-    # @mock.patch("src.auth.")
-    # def test_retrieve_auth_from_ws(self):
+        time = datetime.now() - delta
+
+        data = ('<authData>'
+                f'<token>asd</token>'
+                f'<sign>asd</sign>'
+                f'<expirationTime>{time.isoformat()}</expirationTime>'
+                '</authData>')
+
+        m = mock.mock_open(read_data=data)
+        with mock.patch('xml.etree.ElementTree.open', m):
+            with self.assertRaises(ExpiredAuth):
+                AuthSession.retrieve_auth_from_file()
 
 
 if __name__ == "__main__":

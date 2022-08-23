@@ -1,7 +1,11 @@
-from datetime import datetime
+from datetime import date, datetime
 import xml.etree.ElementTree as ET
 
 TMP_AUTH_RES = 'tmp/auth.xml'
+
+
+class ExpiredAuth(Exception):
+    pass
 
 
 class AuthSession():
@@ -12,6 +16,10 @@ class AuthSession():
         sign = auth.find('sign').text
         expiration_time_item = datetime.fromisoformat(
             auth.find('expirationTime').text)
+
+        current_date = datetime.now()
+        if (expiration_time_item < current_date):
+            raise ExpiredAuth
 
         return cls(token, sign, expiration_time_item)
 
