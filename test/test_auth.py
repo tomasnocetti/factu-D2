@@ -3,6 +3,8 @@ from unittest import TestCase, main, mock
 from src.auth import AuthSession, ExpiredAuth
 from datetime import datetime, timedelta
 
+from src.service import TaResponse
+
 
 class AuthTest(TestCase):
 
@@ -65,6 +67,16 @@ class AuthTest(TestCase):
         with mock.patch('xml.etree.ElementTree.open', m):
             with self.assertRaises(ExpiredAuth):
                 AuthSession.retrieve_auth_from_file()
+
+    @mock.patch("src.auth.request_ta")
+    def test_retrieve_auth_from_ws(self, m):
+        res = TaResponse('TOKEN', 'SIGN', datetime.now())
+        m.return_value = res
+        auth = AuthSession.retrieve_auth_from_ws()
+
+        assert(auth.token == res.get_token())
+        assert(auth.sign == res.get_sign())
+        assert(auth.expiration_time == res.get_expiration())
 
 
 if __name__ == "__main__":

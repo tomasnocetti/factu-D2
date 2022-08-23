@@ -11,7 +11,7 @@ class AlreadyAuthenticated(Exception):
 
 
 class TaResponse:
-    def __init__(self, token, sign, expiration):
+    def __init__(self, token, sign, expiration) -> None:
         self._token = token
         self._sign = sign
         self._expiration = expiration
@@ -26,7 +26,7 @@ class TaResponse:
         return self._expiration
 
 
-def request_ta(payload: str):
+def request_ta(payload: str) -> TaResponse:
 
     headers = {'content-type': 'text/xml',
                'charset': 'utf-8', 'SOAPAction': 'urn:LoginCms'}
