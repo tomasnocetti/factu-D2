@@ -48,6 +48,17 @@ class AuthSession():
         )
 
     @classmethod
+    def init(cls):
+        try:
+            return cls.retrieve_auth_from_file()
+        except (FileNotFoundError, ExpiredAuth):
+            pass
+
+        auth = cls.retrieve_auth_from_ws()
+        auth.save_auth_to_file()
+        return auth
+
+    @classmethod
     def __build_request_xml(cls):
         solicitudXML = ET.parse('templates/solicitud.xml')
 

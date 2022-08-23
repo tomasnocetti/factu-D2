@@ -8,7 +8,7 @@ from src.service import TaResponse
 
 class AuthTest(TestCase):
 
-    @mock.patch("src.auth.open", new_callable=mock.mock_open())
+    @mock.patch("xml.etree.ElementTree.open", new_callable=mock.mock_open())
     def test_retrieve_auth_from_file_no_prev_request_raises_error(self, m):
         m.side_effect = FileNotFoundError()
         with self.assertRaises(FileNotFoundError):
@@ -77,6 +77,81 @@ class AuthTest(TestCase):
         assert(auth.token == res.get_token())
         assert(auth.sign == res.get_sign())
         assert(auth.expiration_time == res.get_expiration())
+
+    @mock.patch("src.auth.AuthSession.retrieve_auth_from_file")
+    def test_init_auth_from_file(self, m):
+        delta = timedelta(minutes=20)
+
+        time = datetime.now() + delta
+        token = 'TOKEN'
+        sign = 'SIGN'
+        m.return_value = AuthSession(
+            token=token, sign=sign, expiration_time=time)
+
+        auth = AuthSession.init()
+
+        assert(auth.token == token)
+        assert(auth.sign == sign)
+        assert(auth.expiration_time.isoformat() == time.isoformat())
+
+    @mock.patch("src.auth.AuthSession.retrieve_auth_from_ws")
+    @mock.patch("src.auth.AuthSession.retrieve_auth_from_file")
+    def test_init_auth_from_ws_due_to_file_nfound(self, mfile, mws):
+        mfile.side_effect = FileNotFoundError
+
+        delta = timedelta(minutes=20)
+
+        time = datetime.now() - delta
+
+        token = 'TOKEN'
+        sign = 'SIGN'
+        mws.return_value = AuthSession(
+            token=token, sign=sign, expiration_time=time)
+
+        auth = AuthSession.init()
+
+        assert(auth.token == token)
+        assert(auth.sign == sign)
+        assert(auth.expiration_time.isoformat() == time.isoformat())
+
+    @mock.patch("src.auth.AuthSession.retrieve_auth_from_ws")
+    @mock.patch("src.auth.AuthSession.retrieve_auth_from_file")
+    def test_init_auth_from_ws_due_to_file_nfound(self, mfile, mws):
+        mfile.side_effect = ExpiredAuth
+
+        delta = timedelta(minutes=20)
+
+        time = datetime.now() - delta
+
+        token = 'TOKEN'
+        sign = 'SIGN'
+        mws.return_value = AuthSession(
+            token=token, sign=sign, expiration_time=time)
+
+        auth = AuthSession.init()
+
+        assert(auth.token == token)
+        assert(auth.sign == sign)
+        assert(auth.expiration_time.isoformat() == time.isoformat())
+
+    @mock.patch("src.auth.AuthSession.save_auth_to_file")
+    @mock.patch("src.auth.AuthSession.retrieve_auth_from_ws")
+    @mock.patch("src.auth.AuthSession.retrieve_auth_from_file")
+    def test_init_auth_from_ws_persists_info(self, mfile, mws, msaf):
+        mfile.side_effect = ExpiredAuth()
+
+        delta = timedelta(minutes=20)
+
+        time = datetime.now() - delta
+
+        token = 'TOKEN'
+        sign = 'SIGN'
+        mws.return_value = AuthSession(
+            token=token, sign=sign, expiration_time=time)
+
+        AuthSession.init()
+
+        msaf.assert_called_once()
 
 
 if __name__ == "__main__":
