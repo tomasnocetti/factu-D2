@@ -8,10 +8,9 @@ from datetime import datetime
 
 class AuthTest(TestCase):
 
-    def test_retrieve_auth_from_file_no_prev_request_raises_error(self):
-        if os.path.isfile(TMP_AUTH_RES):
-            os.remove(TMP_AUTH_RES)
-
+    @mock.patch("src.auth.open", new_callable=mock.mock_open())
+    def test_retrieve_auth_from_file_no_prev_request_raises_error(self, m):
+        m.side_effect = FileNotFoundError()
         with self.assertRaises(FileNotFoundError):
             AuthSession.retrieve_auth_from_file()
 
