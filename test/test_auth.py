@@ -29,6 +29,27 @@ class AuthTest(TestCase):
             f'<expirationTime>{time.isoformat()}</expirationTime>'
             '</authData>')
 
+    def test_retrieve_auth_from_file(self):
+        delta = timedelta(minutes=20)
+
+        time = datetime.now() + delta
+        token = 'TOKEN'
+        sign = 'SIGN'
+
+        data = ('<authData>'
+                f'<token>{token}</token>'
+                f'<sign>{sign}</sign>'
+                f'<expirationTime>{time.isoformat()}</expirationTime>'
+                '</authData>')
+
+        m = mock.mock_open(read_data=data)
+
+        with mock.patch('xml.etree.ElementTree.open', m):
+            auth = AuthSession.retrieve_auth_from_file()
+            assert(auth.token == token)
+            assert(auth.sign == sign)
+            assert(auth.expiration_time.isoformat() == time.isoformat())
+
     def test_retrieve_auth_from_file_raises_expired_error(self):
         delta = timedelta(minutes=20)
 
