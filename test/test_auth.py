@@ -15,20 +15,27 @@ class AuthTest(TestCase):
         with self.assertRaises(FileNotFoundError):
             AuthSession.retrieve_auth_from_file()
 
-    def test_save_and_retrieve_auth_from_file(self):
+    @mock.patch("src.auth.open", new_callable=mock.mock_open())
+    def test_save_auth_from_file(self, m):
         token = 'DEMO'
         sign = 'SIGN'
         time = datetime.now()
-
         auth = AuthSession(token, sign, time)
         auth.save_auth_to_file()
+        data = m().__enter__().write
 
-        auth_from_file = AuthSession.retrieve_auth_from_file()
+        data.assert_called_once_with(
+            '<authData>'
+            f'<token>{token}</token>'
+            f'<sign>{sign}</sign>'
+            f'<expirationTime>{time.isoformat()}</expirationTime>'
+            '</authData>')
 
-        assert(auth.token == auth_from_file.token)
-        assert(auth.sign == auth_from_file.sign)
-        assert(auth.expiration_time.isoformat() ==
-               auth_from_file.expiration_time.isoformat())
+    def test_retrieve_auth_from_file_raises_expired_error(self):
+        pass
+
+    # @mock.patch("src.auth.")
+    # def test_retrieve_auth_from_ws(self):
 
 
 if __name__ == "__main__":

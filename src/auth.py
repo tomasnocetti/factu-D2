@@ -22,14 +22,14 @@ class AuthSession():
 
     def save_auth_to_file(self):
 
-        with open(TMP_AUTH_RES, "w") as auth_file:
-            data = ET.Element('authData')
-            token_item = ET.SubElement(data, 'token')
-            sign_item = ET.SubElement(data, 'sign')
-            expiration_time_item = ET.SubElement(data, 'expirationTime')
-            token_item.text = self.token
-            sign_item.text = self.sign
-            expiration_time_item.text = self.expiration_time.isoformat()
-            data = ET.tostring(data, encoding='unicode')
+        data = ET.Element('authData')
+        token_item = ET.SubElement(data, 'token')
+        sign_item = ET.SubElement(data, 'sign')
+        expiration_time_item = ET.SubElement(data, 'expirationTime')
+        token_item.text = self.token
+        sign_item.text = self.sign
+        expiration_time_item.text = self.expiration_time.isoformat()
+        data = ET.tostring(data, encoding='unicode')
 
+        with open(TMP_AUTH_RES, "w") as auth_file:
             auth_file.write(data)
