@@ -3,7 +3,7 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.serialization import pkcs7
 
 
-def generar_cms(certificado: bytes, clave: bytes, contenido: bytes):
+def build_cms(certificado: bytes, clave: bytes, contenido: bytes):
     SIGN_HEADER = b'-----BEGIN PKCS7-----\n'
     SIGN_FOOTER = b'-----END PKCS7-----\n'
 

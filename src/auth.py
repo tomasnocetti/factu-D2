@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 
 from .service import request_ta
 
-from .cryptography import generar_cms
+from .cryptography import build_cms
 
 TMP_AUTH_RES = 'tmp/auth.xml'
 
@@ -35,9 +35,9 @@ class AuthSession():
         with open('config/clave.key', 'rb') as key_file:
             key_buf = key_file.read()
 
-        buffer = cls._generar_solicitud_xml()
-        cms = generar_cms(cert_buf, key_buf, buffer)
-        request_payload = cls._generar_solicitud_ta(cms)
+        buffer = cls.__build_request_xml()
+        cms = build_cms(cert_buf, key_buf, buffer)
+        request_payload = cls.__build_ta_request(cms)
 
         response = request_ta(request_payload)
 
@@ -48,7 +48,7 @@ class AuthSession():
         )
 
     @classmethod
-    def _generar_solicitud_xml(cls):
+    def __build_request_xml(cls):
         solicitudXML = ET.parse('templates/solicitud.xml')
 
         one_minute = timedelta(minutes=1)
@@ -69,7 +69,7 @@ class AuthSession():
                                  encoding='unicode'), 'utf-8')
 
     @classmethod
-    def _generar_solicitud_ta(cls, cms: str) -> str:
+    def __build_ta_request(cls, cms: str) -> str:
         mytree = ET.parse('templates/solicitudLoginCms.xml')
         myroot = mytree.getroot()
 
