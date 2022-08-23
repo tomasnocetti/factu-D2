@@ -13,3 +13,7 @@ https://www.afip.gob.ar/ws/WSASS/WSASS_manual.pdf
 - certificado.pem : certificado emitido por afip para firmar las solicitudes de autenticación.
 
 - clave.key: clave privada RSA 2048
+
+## Dependencias
+
+- [Cryptography](https://pypi.org/project/cryptography/)
