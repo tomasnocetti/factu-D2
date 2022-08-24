@@ -2,10 +2,8 @@ from datetime import date, datetime, timedelta
 import xml.etree.ElementTree as ET
 
 from .service import request_ta
-
+from env import config
 from .cryptography import build_cms
-
-TMP_AUTH_RES = 'tmp/auth.xml'
 
 
 class ExpiredAuth(Exception):
@@ -15,7 +13,7 @@ class ExpiredAuth(Exception):
 class AuthSession():
     @classmethod
     def retrieve_auth_from_file(cls):
-        auth = ET.parse(TMP_AUTH_RES)
+        auth = ET.parse(config['TMP_AUTH_PATH'])
         token = auth.find('token').text
         sign = auth.find('sign').text
         expiration_time_item = datetime.fromisoformat(
@@ -30,10 +28,10 @@ class AuthSession():
 
     @classmethod
     def retrieve_auth_from_ws(cls):
-        with open('config/certificado.pem', 'rb') as cert_file:
+        with open(config['CERTIFICATE'], 'rb') as cert_file:
             cert_buf = cert_file.read()
 
-        with open('config/clave.key', 'rb') as key_file:
+        with open(config['PRIVATE_KEY'], 'rb') as key_file:
             key_buf = key_file.read()
 
         buffer = cls.__build_request_xml()
@@ -105,5 +103,12 @@ class AuthSession():
         expiration_time_item.text = self.expiration_time.isoformat()
         data = ET.tostring(data, encoding='unicode')
 
-        with open(TMP_AUTH_RES, "w") as auth_file:
+        with open(config['TMP_AUTH_PATH'], "w") as auth_file:
             auth_file.write(data)
+
+    def generate_auth_header(self):
+        return {
+            'Token': self.token,
+            'Sign': self.sign,
+            'Cuit': config['CUIT'],
+        }

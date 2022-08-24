@@ -1,8 +1,7 @@
 import requests
 import xml.etree.ElementTree as ET
 from datetime import datetime
-
-LOGIN_CMS_URL = 'https://wsaahomo.afip.gov.ar/ws/services/LoginCms'
+from env import config
 
 
 class AlreadyAuthenticated(Exception):
@@ -31,7 +30,7 @@ def request_ta(payload: str) -> TaResponse:
     headers = {'content-type': 'text/xml',
                'charset': 'utf-8', 'SOAPAction': 'urn:LoginCms'}
 
-    response = requests.post(LOGIN_CMS_URL, data=payload, headers=headers)
+    response = requests.post(config['AUTH_URL'], data=payload, headers=headers)
 
     content = response.content.decode('UTF-8')
     xml_response = ET.fromstring(content)
