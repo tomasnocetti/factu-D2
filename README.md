@@ -14,6 +14,11 @@ https://www.afip.gob.ar/ws/WSASS/WSASS_manual.pdf
 
 - clave.key: clave privada RSA 2048
 
+## Información del WS
+
+La documentación que se utilizo para realizar la integracion se encuentra en el siguiente link:
+https://www.afip.gob.ar/fe/ayuda//documentos/Manual-desarrollador-V.2.21.pdf
+
 ## Dependencias
 
 - [Cryptography](https://pypi.org/project/cryptography/)
