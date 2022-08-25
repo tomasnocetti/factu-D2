@@ -22,3 +22,5 @@ https://www.afip.gob.ar/fe/ayuda//documentos/Manual-desarrollador-V.2.21.pdf
 ## Dependencias
 
 - [Cryptography](https://pypi.org/project/cryptography/)
+- [Zeep]
+- [reportlab]
