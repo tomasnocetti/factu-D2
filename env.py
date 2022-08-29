@@ -2,6 +2,8 @@ import os
 
 env = os.environ.get('ENV') or 'test'
 
+print(f'Running in {env} mode')
+
 __testing_config = {
     'AUTH_URL': 'https://wsaahomo.afip.gov.ar/ws/services/LoginCms',
     'PRIVATE_KEY': 'config/test/clave.key',
@@ -12,7 +14,7 @@ __testing_config = {
 }
 
 __prod_config = {
-    'AUTH_URL': 'https://wsaahomo.afip.gov.ar/ws/services/LoginCms',
+    'AUTH_URL': 'https://wsaa.afip.gov.ar/ws/services/LoginCms',
     'PRIVATE_KEY': 'config/prod/clave.key',
     'CERTIFICATE': 'config/prod/certificado.pem',
     'FACTURACION_WSDL': 'https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL',
