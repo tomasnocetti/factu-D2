@@ -1,7 +1,8 @@
 # tests.py
+import json
 from unittest import TestCase, main, mock
 
-from src.service import AlreadyAuthenticated, request_ta
+from src.service import AlreadyAuthenticated, request_ta, request_last_ticket_emitted
 
 
 class ServiceTest(TestCase):
@@ -34,6 +35,23 @@ class ServiceTest(TestCase):
 
         with self.assertRaises(AlreadyAuthenticated):
             request_ta("payload")
+
+    @mock.patch("src.service.Client")
+    def test_success_call_last_ticket_ws(self, mock_wsdl_client):
+        with open('test/responses/lastTicketResponseSuccess.json', 'r') as file:
+            response = json.load(file)
+
+        mock_client = mock.Mock(return_value=response)
+
+        mock_wsdl_client().service.FECompUltimoAutorizado = mock_client
+
+        auth_header = {
+            'demo': 'auth'
+        }
+        res = request_last_ticket_emitted(auth_header, 11)
+
+        assert(int(response['CbteNro']) == res)
+        assert(mock_client.assert_called_once)
 
 
 if __name__ == "__main__":

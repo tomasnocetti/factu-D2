@@ -1,7 +1,9 @@
 import requests
 import xml.etree.ElementTree as ET
 from datetime import datetime
-from env import config
+from env import config, contants
+from zeep import Client
+from .ticket_recipt import TicketRecipt
 
 
 class AlreadyAuthenticated(Exception):
@@ -57,3 +59,19 @@ def request_ta(payload: str) -> TaResponse:
     sign = credentials.find('sign').text
 
     return TaResponse(token, sign, expirationDate)
+
+
+def request_ticket(auth: dict, req: dict) -> TicketRecipt:
+    pass
+
+
+def request_last_ticket_emitted(auth: dict, pto_v: int) -> int:
+    client = Client(config['FACTURACION_WSDL'])
+
+    res = client.service.FECompUltimoAutorizado(
+        Auth=auth,
+        PtoVta=pto_v,
+        CbteTipo=contants['COD_CMP']
+    )
+
+    return int(res['CbteNro'])

@@ -4,6 +4,10 @@ env = os.environ.get('ENV') or 'test'
 
 print(f'Running in {env} mode')
 
+contants = {
+    'COD_CMP': 11
+}
+
 __testing_config = {
     'AUTH_URL': 'https://wsaahomo.afip.gov.ar/ws/services/LoginCms',
     'PRIVATE_KEY': 'config/test/clave.key',
