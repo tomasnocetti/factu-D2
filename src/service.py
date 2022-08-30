@@ -5,6 +5,8 @@ from env import config, contants
 from zeep import Client
 from .ticket_recipt import TicketRecipt
 
+client = Client(config['FACTURACION_WSDL'])
+
 
 class AlreadyAuthenticated(Exception):
     ERROR = 'coe.alreadyAuthenticated'
@@ -66,7 +68,6 @@ def request_ticket(auth: dict, req: dict) -> TicketRecipt:
 
 
 def request_last_ticket_emitted(auth: dict, pto_v: int) -> int:
-    client = Client(config['FACTURACION_WSDL'])
 
     res = client.service.FECompUltimoAutorizado(
         Auth=auth,

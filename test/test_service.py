@@ -36,14 +36,14 @@ class ServiceTest(TestCase):
         with self.assertRaises(AlreadyAuthenticated):
             request_ta("payload")
 
-    @mock.patch("src.service.Client")
-    def test_success_call_last_ticket_ws(self, mock_wsdl_client):
+    @mock.patch('src.service.client')
+    def test_success_call_last_ticket_ws(self, wsdl_mock):
         with open('test/responses/lastTicketResponseSuccess.json', 'r') as file:
             response = json.load(file)
 
         mock_client = mock.Mock(return_value=response)
 
-        mock_wsdl_client().service.FECompUltimoAutorizado = mock_client
+        wsdl_mock.service.FECompUltimoAutorizado = mock_client
 
         auth_header = {
             'demo': 'auth'
@@ -51,7 +51,7 @@ class ServiceTest(TestCase):
         res = request_last_ticket_emitted(auth_header, 11)
 
         assert(int(response['CbteNro']) == res)
-        assert(mock_client.assert_called_once)
+        wsdl_mock.service.FECompUltimoAutorizado.assert_called_once()
 
 
 if __name__ == "__main__":
