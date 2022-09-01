@@ -1,4 +1,5 @@
 *.cms
+.DS_STORE
 config/*.pem
 config/*.key
 /config
