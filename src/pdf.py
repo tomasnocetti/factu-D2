@@ -1,15 +1,19 @@
 
+from datetime import datetime
+from typing import List
 from reportlab.platypus import Table, TableStyle, Frame
 from reportlab.lib import colors
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.pagesizes import A4
 import qrcode
+import json
+import base64
+
+from env import constants
+from src.ticket_item import TicketItem
 
 
 width, height = A4  # keep for later
-
-
-canv = Canvas('doc.pdf', bottomup=0)
 
 STROKE_COLOR = '#343434'
 SROKE_WITH = 0.4
@@ -25,11 +29,11 @@ HEADER_HEIGHT = 146
 class PdfGenerator():
     def __init__(
         self,
-        pto_v,
-        ticket_n,
-        date,
-        cuit,
-        ib,
+        pto_v: int,
+        ticket_n: int,
+        date: datetime,
+        cuit: int,
+        ib: int,
         ia,
         name,
         address,
@@ -39,12 +43,12 @@ class PdfGenerator():
         doc,
         iva_status,
         sale,
-        subtotal,
-        taxes,
-        total,
-        qrdata,
-        cae,
-        vto_cae
+        subtotal: float,
+        taxes: float,
+        total: float,
+        cae: int,
+        vto_cae: datetime,
+        items: List[TicketItem]
     ):
         self.type = 'C'
         self.ticket_n = ticket_n
@@ -64,9 +68,9 @@ class PdfGenerator():
         self.subtotal = subtotal
         self.taxes = taxes
         self.total = total
-        self.qrdata = qrdata
         self.cae = cae
         self.vto_cae = vto_cae
+        self.items = items
 
         self.canv = Canvas('doc.pdf', bottomup=1)
 
@@ -130,9 +134,18 @@ class PdfGenerator():
         column_width = [43, 283, 65, 80, 94]
         header = ['Código', 'Producto/Servicio',
                   'Cantidad', 'Precio Unit.', 'Subtotal']
-        product = ['', 'Servicios Web', '1', '5200', '5200']
 
-        data = [header, product]
+        data = [header]
+
+        for item in self.items:
+            data.append([
+                item.get_code(),
+                item.get_description(),
+                self.f_num(item.get_units()),
+                self.f_num(item.get_unit_price()),
+                self.f_num(item.get_subtotal()),
+            ])
+
         t = Table(data, colWidths=column_width)
         t.setStyle(TableStyle([('GRID', (0, 0), (7, 0), 0.5, colors.black),
                                ('TOPPADDING', (0, 0), (7, 0), 4),
@@ -149,11 +162,17 @@ class PdfGenerator():
         self.canv.drawString(width/2 + 35, self.inv(49 + 30), 'FACTURA')
 
         self.canv.setFont(BOLD_FONT, 9)
+        str_pto_v = str(self.pto_v)
+        str_ticket_n = str(self.ticket_n)
+
+        len_pto_v = len(str_pto_v)
+        len_ticket_n = len(str_ticket_n)
+
         self.canv.drawString(width/2 + 35, self.inv(49 + 52),
-                             f'Punto de Venta:  {self.pto_v}   Comp Nro:  {self.ticket_n}')
+                             f'Punto de Venta:  {str_pto_v.zfill(6 - len_pto_v)}   Comp Nro:  {str_ticket_n.zfill(9 - len_ticket_n)}')
 
         self.canv.drawString(width/2 + 35, self.inv(49 + 64),
-                             f'Fecha de emisión:  {self.date}')
+                             f'Fecha de emisión:  {self.date.strftime("%d/%m/%Y")}')
 
         self.canv.setFont(FONT, 9)
         self.canv.drawString(
@@ -180,7 +199,7 @@ class PdfGenerator():
     def generate_date_information(self):
         self.canv.setFont(BOLD_FONT, 10)
         HEIGHT = 184
-        text_len = canv.stringWidth(
+        text_len = self.canv.stringWidth(
             'Período Facturado Desde:  ', BOLD_FONT, 10)
 
         self.canv.drawString(LEFT_MARGIN * 2, self.inv(HEIGHT),
@@ -191,7 +210,7 @@ class PdfGenerator():
                              self.inv(HEIGHT), self.since)
 
         self.canv.setFont(BOLD_FONT, 10)
-        text_len = canv.stringWidth(
+        text_len = self.canv.stringWidth(
             'Hasta:  ', BOLD_FONT, 10)
         self.canv.drawString(LEFT_MARGIN * 2 + 210, self.inv(HEIGHT),
                              'Hasta:  ')
@@ -200,7 +219,7 @@ class PdfGenerator():
                              text_len, self.inv(HEIGHT), self.to)
 
         self.canv.setFont(BOLD_FONT, 10)
-        text_len = canv.stringWidth(
+        text_len = self.canv.stringWidth(
             'Fecha de Vto. para el pago:  ', BOLD_FONT, 10)
         self.canv.drawString(LEFT_MARGIN * 2 + 330, self.inv(HEIGHT),
                              'Fecha de Vto. para el pago:  ')
@@ -240,25 +259,48 @@ class PdfGenerator():
                                   PADDING), 'Subtotal: $')
 
         self.canv.drawRightString(width - LEFT_MARGIN * 2, self.inv(POINTER +
-                                  PADDING), self.subtotal)
+                                  PADDING), self.f_num(self.subtotal))
 
         self.canv.drawRightString(LEFT_MARGIN * 2 + width * 3/4, self.inv(POINTER + PADDING * 2),
                                   'Importe Otros Tributos: $')
 
         self.canv.drawRightString(width - LEFT_MARGIN * 2, self.inv(POINTER +
-                                  PADDING * 2 + 4), self.taxes)
+                                  PADDING * 2 + 4), self.f_num(self.taxes))
         self.canv.setFont(BOLD_FONT, 11)
         self.canv.drawRightString(LEFT_MARGIN * 2 + width * 3/4, self.inv(POINTER + PADDING * 3),
                                   'Importe Total: $')
 
         self.canv.drawRightString(width - LEFT_MARGIN * 2, self.inv(POINTER + PADDING * 3),
-                                  self.total)
+                                  self.f_num(self.total))
+
+    def f_num(self, num: float):
+        return "{:.2f}".format(num).replace(".", ",")
 
     def generate_footer(self):
         POINTER = 684
         PADDING = 10
 
-        img = qrcode.make(self.qrdata)
+        data = {
+            "ver": 1,
+            "fecha": self.date.strftime("%Y-%m-%d"),
+            "cuit": self.cuit,
+            "ptoVta": self.pto_v,
+            "tipoCmp": 11,
+            "nroCmp": self.ticket_n,
+            "importe": self.total,
+            "moneda": "PES",
+            "ctz": 1,
+            "tipoCodAut": "E",
+            "codAut": self.cae
+        }
+
+        json_data = json.dumps(data)
+        base64_data = base64.b64encode(
+            json_data.encode('ascii')).decode('ascii')
+
+        url = constants['BASE_QR_URL'] + base64_data
+        img = qrcode.make(url)
+
         self.canv.drawCentredString(
             width/2, self.inv(POINTER + PADDING), f'Pág. 1/1')
         self.canv.drawRightString(LEFT_MARGIN * 2 + width * 3/4, self.inv(POINTER + PADDING),
@@ -269,7 +311,7 @@ class PdfGenerator():
 
         self.canv.setFont(FONT, 10)
         self.canv.drawString(LEFT_MARGIN * 2 + width * 3/4 + 10, self.inv(POINTER + PADDING),
-                             self.cae)
+                             str(self.cae))
         self.canv.drawString(LEFT_MARGIN * 2 + width * 3/4 + 10, self.inv(POINTER + PADDING * 3),
                              self.vto_cae)
 
@@ -280,7 +322,9 @@ class PdfGenerator():
                             self.inv(POINTER + 20 + 45), height=45, width=100)
 
 
-a = PdfGenerator('0001', '0000004', '05/05/2022', '20396423295', '20396423295', '01/01/1900', 'Tomas Nocetti',
-                 'Condarco 4357 - Ciudad de Buenos Aires', '04/05/2022', '05/05/2022', '08/10/2022', '0', 'Consumidor Final', 'Cuenta Corriente', '280', '0', '280', 'https://www.afip.gob.ar/fe/qr/?p=eyJ2ZXIiOjEsImZlY2hhIjoiMjAyMi0wNS0yOSIsImN1aXQiOjIwMzk2NDIzMjk1LCJwdG9WdGEiOjEsInRpcG9DbXAiOjExLCJucm9DbXAiOjY5LCJpbXBvcnRlIjo1MDI1LCJtb25lZGEiOiJQRVMiLCJjdHoiOjEsInRpcG9Db2RBdXQiOiJFIiwiY29kQXV0Ijo3MjIyNTg4NDIzNzE4OX0=', '23023020311111', '08/06/2022')
+a = PdfGenerator(
+    1, 4, datetime.now(), 20396423295, 20396423295, '01/01/1900', 'Tomas Nocetti',
+    'Condarco 4357 - Ciudad de Buenos Aires', '04/05/2022', '05/05/2022', '08/10/2022', '0', 'Consumidor Final', 'Cuenta Corriente', 280.10, 0, 280.10, 23023020311111, '08/06/2022',
+    [TicketItem('Servicios Web', 18000, 1)])
 
 a.print()

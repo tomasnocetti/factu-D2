@@ -4,8 +4,9 @@ env = os.environ.get('ENV') or 'test'
 
 print(f'Running in {env} mode')
 
-contants = {
-    'COD_CMP': 11
+constants = {
+    'COD_CMP': 11,
+    'BASE_QR_URL': 'https://www.afip.gob.ar/fe/qr/?p='
 }
 
 __testing_config = {
