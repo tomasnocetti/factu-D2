@@ -1,7 +1,7 @@
 import requests
 import xml.etree.ElementTree as ET
 from datetime import datetime
-from env import config, contants
+from env import config, constants
 from zeep import Client
 from .ticket_recipt import TicketRecipt
 
@@ -72,7 +72,7 @@ def request_last_ticket_emitted(auth: dict, pto_v: int) -> int:
     res = client.service.FECompUltimoAutorizado(
         Auth=auth,
         PtoVta=pto_v,
-        CbteTipo=contants['COD_CMP']
+        CbteTipo=constants['COD_CMP']
     )
 
     return int(res['CbteNro'])
