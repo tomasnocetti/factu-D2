@@ -64,7 +64,18 @@ def request_ta(payload: str) -> TaResponse:
 
 
 def request_ticket(auth: dict, req: dict) -> TicketRecipt:
-    pass
+
+    res = client.service.FECAESolicitar(
+        Auth=auth,
+        FeCAEReq=req
+    )
+    errors = res['Errors']
+    cab_res = res['FeCabResp']
+    der_res = res['FeDetResp']
+
+    if (errors is not None):
+        err = errors['Err'][0]
+        raise Exception(f'code: {err["Code"]} \n msg: {err["Msg"]}')
 
 
 def request_last_ticket_emitted(auth: dict, pto_v: int) -> int:

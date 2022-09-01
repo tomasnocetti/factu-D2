@@ -2,7 +2,7 @@
 import json
 from unittest import TestCase, main, mock
 
-from src.service import AlreadyAuthenticated, request_ta, request_last_ticket_emitted
+from src.service import AlreadyAuthenticated, request_ta, request_last_ticket_emitted, request_ticket
 
 
 class ServiceTest(TestCase):
@@ -52,6 +52,44 @@ class ServiceTest(TestCase):
 
         assert(int(response['CbteNro']) == res)
         wsdl_mock.service.FECompUltimoAutorizado.assert_called_once()
+
+    @mock.patch('src.service.client')
+    def test_success_call_ticket_ws(self, wsdl_mock):
+        pass
+
+        with open('test/responses/ticketResponseSuccess.json', 'r') as file:
+            response = json.load(file)
+
+        mock_client = mock.Mock(return_value=response)
+
+        wsdl_mock.service.FECAESolicitar = mock_client
+
+        auth_header = {
+            'demo': 'auth'
+        }
+
+        payload = {}
+
+        res = request_ticket(auth_header, payload)
+
+    @mock.patch('src.service.client')
+    def test_failure_call_ticket_ws_code_10016(self, wsdl_mock):
+
+        with open('test/responses/ticketResponseFailureCode10016.json', 'r') as file:
+            response = json.load(file)
+
+        mock_client = mock.Mock(return_value=response)
+
+        wsdl_mock.service.FECAESolicitar = mock_client
+
+        auth_header = {
+            'demo': 'auth'
+        }
+
+        payload = {}
+
+        with self.assertRaises(Exception) as exc:
+            request_ticket(auth_header, payload)
 
 
 if __name__ == "__main__":

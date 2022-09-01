@@ -1,0 +1,36 @@
+{
+  "FeCabResp": {
+    "Cuit": 20396423295,
+    "PtoVta": 1,
+    "CbteTipo": 11,
+    "FchProceso": "20220901123715",
+    "CantReg": 1,
+    "Resultado": "R",
+    "Reproceso": "N"
+  },
+  "FeDetResp": {
+    "FECAEDetResponse": [
+      {
+        "Concepto": 2,
+        "DocTipo": 99,
+        "DocNro": 0,
+        "CbteDesde": 10,
+        "CbteHasta": 10,
+        "CbteFch": "20220824",
+        "Resultado": "R",
+        "Observaciones": null,
+        "CAE": null,
+        "CAEFchVto": null
+      }
+    ]
+  },
+  "Events": null,
+  "Errors": {
+    "Err": [
+      {
+        "Code": 10016,
+        "Msg": "El numero o fecha del comprobante no se corresponde con el proximo a autorizar. Consultar metodo FECompUltimoAutorizado."
+      }
+    ]
+  }
+}
