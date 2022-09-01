@@ -6,6 +6,10 @@ from .service import request_ta
 from env import config
 from .cryptography import build_cms
 
+direct = os.path.dirname(config['TMP_AUTH_PATH'])
+if (not os.path.exists(direct)):
+    os.makedirs(direct)
+
 
 class ExpiredAuth(Exception):
     pass
@@ -14,9 +18,6 @@ class ExpiredAuth(Exception):
 class AuthSession():
     @classmethod
     def retrieve_auth_from_file(cls):
-        direct = os.path.dirname(config['TMP_AUTH_PATH'])
-        if (not os.path.exists(direct)):
-            os.makedirs(direct)
         auth = ET.parse(config['TMP_AUTH_PATH'])
         token = auth.find('token').text
         sign = auth.find('sign').text
