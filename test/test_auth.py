@@ -68,10 +68,19 @@ class AuthTest(TestCase):
             with self.assertRaises(ExpiredAuth):
                 AuthSession.retrieve_auth_from_file()
 
+    @mock.patch("src.auth.open", new_callable=mock.mock_open())
     @mock.patch("src.auth.request_ta")
-    def test_retrieve_auth_from_ws(self, m):
+    def test_retrieve_auth_from_ws(self, m, m_open):
         res = TaResponse('TOKEN', 'SIGN', datetime.now())
         m.return_value = res
+
+        with open('test/credentials/certificado.pem', 'rb') as cert_file:
+            cert_buf = cert_file.read()
+
+        with open('test/credentials/clave.key', 'rb') as key_file:
+            key_buf = key_file.read()
+
+        m_open().__enter__().read.side_effect = [cert_buf, key_buf]
         auth = AuthSession.retrieve_auth_from_ws()
 
         assert(auth.token == res.get_token())

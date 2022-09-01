@@ -1,6 +1,6 @@
 *.cms
-*.pem
-*.key
+config/*.pem
+config/*.key
 /config
 /openssl
 /tmp
