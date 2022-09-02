@@ -13,6 +13,7 @@ from env import constants
 from src.ticket import Ticket
 from src.ticket_item import TicketItem
 from src.ticket_recipt import TicketRecipt
+from src.user_config import UserConfig
 
 
 width, height = A4  # keep for later
@@ -31,17 +32,13 @@ HEADER_HEIGHT = 146
 class PdfGenerator():
     def __init__(
         self,
-        ia,
-        name,
-        address,
+        user: UserConfig,
         ticket: Ticket,
         recipt: TicketRecipt,
         items: List[TicketItem]
     ):
         self.type = 'C'
-        self.name = name
-        self.address = address
-        self.ia = ia
+        self.user = user
         self.ticket = ticket
         self.items = items
         self.recipt = recipt
@@ -153,18 +150,19 @@ class PdfGenerator():
         self.canv.drawString(width/2 + 35, self.inv(49 + 100),
                              f'Ingresos Brutos:  {self.recipt.get_cuit()}')
         self.canv.drawString(width/2 + 35, self.inv(49 + 112),
-                             f'Fecha de Inicio de Actividades:  {self.ia}')
+                             f'Fecha de Inicio de Actividades:  {self.user.get_ia().strftime("%d/%m/%Y")}')
 
     def generate_lef_side_of_header(self):
         BASE = 49
         self.canv.setFont(BOLD_FONT, 22)
-        self.canv.drawString(LEFT_MARGIN * 2, self.inv(BASE + 30), self.name)
+        self.canv.drawString(
+            LEFT_MARGIN * 2, self.inv(BASE + 30), self.user.get_name())
 
         self.canv.setFont(FONT, 9)
         self.canv.drawString(LEFT_MARGIN * 2, self.inv(BASE + 88),
-                             f'Domicilio Comercial:  {self.address}')
+                             f'Domicilio Comercial:  {self.user.get_address()}')
         self.canv.drawString(LEFT_MARGIN * 2, self.inv(BASE + 64),
-                             f'Razón Social:  {self.name}')
+                             f'Razón Social:  {self.user.get_name()}')
         self.canv.setFont(BOLD_FONT, 9)
         self.canv.drawString(LEFT_MARGIN * 2, self.inv(BASE + 112),
                              'Condición frente al IVA:  Responsable Monotributo')
@@ -296,9 +294,11 @@ class PdfGenerator():
 
 
 a = PdfGenerator(
-    ia='01/01/1900',
-    name='Tomas Nocetti',
-    address='Condarco 4357 - Ciudad de Buenos Aires',
+    user=UserConfig(
+        name='Tomas Nocetti',
+        address='Siempre Viva 123, CABA',
+        ia=datetime.now()
+    ),
     ticket=Ticket(),
     recipt=TicketRecipt(
         ticket_code=11,
