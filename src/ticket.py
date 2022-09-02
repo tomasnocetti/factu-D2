@@ -4,15 +4,23 @@ from datetime import datetime
 class Ticket():
     def __init__(
         self,
+        since,
+        to,
+        payment_vto,
+        iva_status,
+        sale,
+        subtotal,
+        taxes,
+        total
     ) -> None:
-        self.since = datetime.now()
-        self.to = datetime.now()
-        self.payment_vto = datetime.now()
-        self.iva_status = 'Consumidor Final'
-        self.sale = 'Cuenta Corriente'
-        self.subtotal = 280.10
-        self.taxes = 0
-        self.total = 280.10
+        self.since = since
+        self.to = to
+        self.payment_vto = payment_vto
+        self.iva_status = iva_status
+        self.sale = sale
+        self.subtotal = subtotal
+        self.taxes = taxes
+        self.total = total
 
     def get_since(self):
         return self.since

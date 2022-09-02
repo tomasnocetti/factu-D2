@@ -299,7 +299,16 @@ a = PdfGenerator(
         address='Siempre Viva 123, CABA',
         ia=datetime.now()
     ),
-    ticket=Ticket(),
+    ticket=Ticket(
+        since=datetime.now(),
+        to=datetime.now(),
+        payment_vto=datetime.now(),
+        iva_status='Consumidor Final',
+        sale='Cuenta Corriente',
+        subtotal=280.10,
+        taxes=0,
+        total=280.10
+    ),
     recipt=TicketRecipt(
         ticket_code=11,
         pto_v=1,
