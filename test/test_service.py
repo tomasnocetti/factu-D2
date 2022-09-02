@@ -3,6 +3,7 @@ import json
 from unittest import TestCase, main, mock
 
 from src.service import AlreadyAuthenticated, request_ta, request_last_ticket_emitted, request_ticket
+from src.ticket_recipt import TicketRecipt
 
 
 class ServiceTest(TestCase):
@@ -55,8 +56,6 @@ class ServiceTest(TestCase):
 
     @mock.patch('src.service.client')
     def test_success_call_ticket_ws(self, wsdl_mock):
-        pass
-
         with open('test/responses/ticketResponseSuccess.json', 'r') as file:
             response = json.load(file)
 
@@ -71,6 +70,8 @@ class ServiceTest(TestCase):
         payload = {}
 
         res = request_ticket(auth_header, payload)
+
+        self.assertIsInstance(res, TicketRecipt)
 
     @mock.patch('src.service.client')
     def test_failure_call_ticket_ws_code_10016(self, wsdl_mock):

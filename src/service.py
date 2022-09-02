@@ -70,12 +70,25 @@ def request_ticket(auth: dict, req: dict) -> TicketRecipt:
         FeCAEReq=req
     )
     errors = res['Errors']
-    cab_res = res['FeCabResp']
-    der_res = res['FeDetResp']
 
     if (errors is not None):
         err = errors['Err'][0]
         raise Exception(f'code: {err["Code"]} \n msg: {err["Msg"]}')
+
+    cab_res = res['FeCabResp']
+    der_res = res['FeDetResp']
+    res = der_res['FECAEDetResponse'][0]
+
+    return TicketRecipt(
+        cuit=cab_res['Cuit'],
+        pto_v=cab_res['PtoVta'],
+        date=datetime.strptime(res['CbteFch'], '%Y%m%d'),
+        doc=res['DocNro'],
+        cae=res['CAE'],
+        vto_cae=datetime.strptime(res['CAEFchVto'], '%Y%m%d'),
+        ticket_n=res['CbteDesde'],
+        doc_type=res['DocTipo']
+    )
 
 
 def request_last_ticket_emitted(auth: dict, pto_v: int) -> int:
