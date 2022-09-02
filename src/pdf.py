@@ -10,7 +10,9 @@ import json
 import base64
 
 from env import constants
+from src.ticket import Ticket
 from src.ticket_item import TicketItem
+from src.ticket_recipt import TicketRecipt
 
 
 width, height = A4  # keep for later
@@ -29,49 +31,20 @@ HEADER_HEIGHT = 146
 class PdfGenerator():
     def __init__(
         self,
-        pto_v: int,
-        ticket_n: int,
-        date: datetime,
-        cuit: int,
-        ib: int,
         ia,
         name,
         address,
-        since,
-        to,
-        payment_vto,
-        doc,
-        iva_status,
-        sale,
-        subtotal: float,
-        taxes: float,
-        total: float,
-        cae: int,
-        vto_cae: datetime,
+        ticket: Ticket,
+        recipt: TicketRecipt,
         items: List[TicketItem]
     ):
         self.type = 'C'
-        self.ticket_n = ticket_n
-        self.pto_v = pto_v
-        self.date = date
-        self.cuit = cuit
         self.name = name
         self.address = address
-        self.ib = ib
         self.ia = ia
-        self.since = since
-        self.to = to
-        self.payment_vto = payment_vto
-        self.doc = doc
-        self.iva_status = iva_status
-        self.sale = sale
-        self.subtotal = subtotal
-        self.taxes = taxes
-        self.total = total
-        self.cae = cae
-        self.vto_cae = vto_cae
+        self.ticket = ticket
         self.items = items
-
+        self.recipt = recipt
         self.canv = Canvas('doc.pdf', bottomup=1)
 
     def inv(self, size):
@@ -162,8 +135,8 @@ class PdfGenerator():
         self.canv.drawString(width/2 + 35, self.inv(49 + 30), 'FACTURA')
 
         self.canv.setFont(BOLD_FONT, 9)
-        str_pto_v = str(self.pto_v)
-        str_ticket_n = str(self.ticket_n)
+        str_pto_v = str(self.recipt.get_pto_v())
+        str_ticket_n = str(self.recipt.get_ticket_n())
 
         len_pto_v = len(str_pto_v)
         len_ticket_n = len(str_ticket_n)
@@ -172,13 +145,13 @@ class PdfGenerator():
                              f'Punto de Venta:  {str_pto_v.zfill(6 - len_pto_v)}   Comp Nro:  {str_ticket_n.zfill(9 - len_ticket_n)}')
 
         self.canv.drawString(width/2 + 35, self.inv(49 + 64),
-                             f'Fecha de emisión:  {self.date.strftime("%d/%m/%Y")}')
+                             f'Fecha de emisión:  {self.recipt.get_date().strftime("%d/%m/%Y")}')
 
         self.canv.setFont(FONT, 9)
         self.canv.drawString(
-            width/2 + 35, self.inv(49 + 88), f'Doc.:  {self.cuit}')
+            width/2 + 35, self.inv(49 + 88), f'Doc.:  {self.recipt.get_cuit()}')
         self.canv.drawString(width/2 + 35, self.inv(49 + 100),
-                             f'Ingresos Brutos:  {self.ib}')
+                             f'Ingresos Brutos:  {self.recipt.get_cuit()}')
         self.canv.drawString(width/2 + 35, self.inv(49 + 112),
                              f'Fecha de Inicio de Actividades:  {self.ia}')
 
@@ -207,7 +180,7 @@ class PdfGenerator():
 
         self.canv.setFont(FONT, 10)
         self.canv.drawString(LEFT_MARGIN * 2 + text_len,
-                             self.inv(HEIGHT), self.since)
+                             self.inv(HEIGHT), self.ticket.get_since().strftime("%d/%m/%Y"))
 
         self.canv.setFont(BOLD_FONT, 10)
         text_len = self.canv.stringWidth(
@@ -216,7 +189,7 @@ class PdfGenerator():
                              'Hasta:  ')
         self.canv.setFont(FONT, 10)
         self.canv.drawString(LEFT_MARGIN * 2 + 210 +
-                             text_len, self.inv(HEIGHT), self.to)
+                             text_len, self.inv(HEIGHT), self.ticket.get_to().strftime("%d/%m/%Y"))
 
         self.canv.setFont(BOLD_FONT, 10)
         text_len = self.canv.stringWidth(
@@ -225,7 +198,7 @@ class PdfGenerator():
                              'Fecha de Vto. para el pago:  ')
         self.canv.setFont(FONT, 10)
         self.canv.drawString(LEFT_MARGIN * 2 + 330 +
-                             text_len, self.inv(HEIGHT), self.payment_vto)
+                             text_len, self.inv(HEIGHT), self.ticket.get_payment_vto().strftime("%d/%m/%Y"))
 
     def generate_client_information(self):
         POINTER = 194
@@ -237,13 +210,13 @@ class PdfGenerator():
         self.canv.setFont(BOLD_FONT, 9)
 
         self.canv.drawString(LEFT_MARGIN * 2, self.inv(POINTER +
-                             PADDING), f'CUIT: {self.doc}')
+                             PADDING), f'CUIT: {self.recipt.get_doc_client()}')
 
         self.canv.drawString(LEFT_MARGIN * 2, self.inv(POINTER + PADDING * 2 + 4),
-                             f'Condición frente al IVA:   {self.iva_status}')
+                             f'Condición frente al IVA:   {self.ticket.get_iva_status()}')
 
         self.canv.drawString(LEFT_MARGIN * 2, self.inv(POINTER + PADDING * 3 + 9),
-                             f'Condición de venta:   {self.sale}')
+                             f'Condición de venta:   {self.ticket.get_sale()}')
 
     def generate_total(self):
         POINTER = 580
@@ -259,19 +232,19 @@ class PdfGenerator():
                                   PADDING), 'Subtotal: $')
 
         self.canv.drawRightString(width - LEFT_MARGIN * 2, self.inv(POINTER +
-                                  PADDING), self.f_num(self.subtotal))
+                                  PADDING), self.f_num(self.ticket.get_subtotal()))
 
         self.canv.drawRightString(LEFT_MARGIN * 2 + width * 3/4, self.inv(POINTER + PADDING * 2),
                                   'Importe Otros Tributos: $')
 
         self.canv.drawRightString(width - LEFT_MARGIN * 2, self.inv(POINTER +
-                                  PADDING * 2 + 4), self.f_num(self.taxes))
+                                  PADDING * 2 + 4), self.f_num(self.ticket.get_taxes()))
         self.canv.setFont(BOLD_FONT, 11)
         self.canv.drawRightString(LEFT_MARGIN * 2 + width * 3/4, self.inv(POINTER + PADDING * 3),
                                   'Importe Total: $')
 
         self.canv.drawRightString(width - LEFT_MARGIN * 2, self.inv(POINTER + PADDING * 3),
-                                  self.f_num(self.total))
+                                  self.f_num(self.ticket.get_total()))
 
     def f_num(self, num: float):
         return "{:.2f}".format(num).replace(".", ",")
@@ -282,16 +255,16 @@ class PdfGenerator():
 
         data = {
             "ver": 1,
-            "fecha": self.date.strftime("%Y-%m-%d"),
-            "cuit": self.cuit,
-            "ptoVta": self.pto_v,
-            "tipoCmp": 11,
-            "nroCmp": self.ticket_n,
-            "importe": self.total,
+            "fecha": self.recipt.get_date().strftime("%Y-%m-%d"),
+            "cuit": self.recipt.get_cuit(),
+            "ptoVta": self.recipt.get_pto_v(),
+            "tipoCmp": self.recipt.get_ticket_code(),
+            "nroCmp": self.recipt.get_ticket_n(),
+            "importe": self.ticket.get_total(),
             "moneda": "PES",
             "ctz": 1,
             "tipoCodAut": "E",
-            "codAut": self.cae
+            "codAut": self.recipt.get_cae()
         }
 
         json_data = json.dumps(data)
@@ -311,9 +284,9 @@ class PdfGenerator():
 
         self.canv.setFont(FONT, 10)
         self.canv.drawString(LEFT_MARGIN * 2 + width * 3/4 + 10, self.inv(POINTER + PADDING),
-                             str(self.cae))
+                             str(self.recipt.get_cae()))
         self.canv.drawString(LEFT_MARGIN * 2 + width * 3/4 + 10, self.inv(POINTER + PADDING * 3),
-                             self.vto_cae)
+                             self.recipt.get_vto_cae().strftime("%d/%m/%Y"))
 
         self.canv.drawInlineImage(img, LEFT_MARGIN * 2,
                                   self.inv(POINTER + 90), width=90, height=90)
@@ -323,8 +296,21 @@ class PdfGenerator():
 
 
 a = PdfGenerator(
-    1, 4, datetime.now(), 20396423295, 20396423295, '01/01/1900', 'Tomas Nocetti',
-    'Condarco 4357 - Ciudad de Buenos Aires', '04/05/2022', '05/05/2022', '08/10/2022', '0', 'Consumidor Final', 'Cuenta Corriente', 280.10, 0, 280.10, 23023020311111, '08/06/2022',
-    [TicketItem('Servicios Web', 18000, 1)])
+    ia='01/01/1900',
+    name='Tomas Nocetti',
+    address='Condarco 4357 - Ciudad de Buenos Aires',
+    ticket=Ticket(),
+    recipt=TicketRecipt(
+        ticket_code=11,
+        pto_v=1,
+        date=datetime.now(),
+        cuit=20396423295,
+        doc_type=99,
+        doc=0,
+        ticket_n=4,
+        cae=4512302131,
+        vto_cae=datetime.now()
+    ),
+    items=[TicketItem('Servicios Web', 18000, 1)])
 
 a.print()

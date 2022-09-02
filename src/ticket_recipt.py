@@ -4,6 +4,7 @@ from datetime import datetime
 class TicketRecipt:
     def __init__(
         self,
+        ticket_code: int,
         pto_v: int,
         date: datetime,
         cuit: int,
@@ -21,6 +22,7 @@ class TicketRecipt:
         self.cae = cae
         self.vto_cae = vto_cae
         self.cuit = cuit
+        self.ticket_code = ticket_code
 
     def get_pto_v(self):
         return self.pto_v
@@ -48,3 +50,6 @@ class TicketRecipt:
 
     def get_cuit(self):
         return self.cuit
+
+    def get_ticket_code(self):
+        return self.ticket_code

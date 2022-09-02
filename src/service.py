@@ -80,6 +80,7 @@ def request_ticket(auth: dict, req: dict) -> TicketRecipt:
     res = der_res['FECAEDetResponse'][0]
 
     return TicketRecipt(
+        ticket_code=cab_res['CbteTipo'],
         cuit=cab_res['Cuit'],
         pto_v=cab_res['PtoVta'],
         date=datetime.strptime(res['CbteFch'], '%Y%m%d'),
