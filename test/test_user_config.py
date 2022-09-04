@@ -12,9 +12,11 @@ class TicketItemTests(TestCase):
         t = UserConfig(
             name='Tomas Nocetti',
             address=address,
-            ia=date
+            ia=date,
+            pto_v=1
         )
 
         assert(t.get_address() == address)
         assert(t.get_name() == 'Tomas Nocetti')
         assert(t.get_ia() == date)
+        assert(t.get_pto_vta() == 1)
