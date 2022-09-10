@@ -1,4 +1,6 @@
-from datetime import datetime
+from typing import List
+from src.ticket_item import TicketItem
+from src.ticket_recipt import TicketRecipt
 
 
 class Ticket():
@@ -9,18 +11,15 @@ class Ticket():
         payment_vto,
         iva_status,
         sale,
-        subtotal,
-        taxes,
-        total
+        items: List[TicketItem]
     ) -> None:
         self.since = since
         self.to = to
         self.payment_vto = payment_vto
         self.iva_status = iva_status
         self.sale = sale
-        self.subtotal = subtotal
-        self.taxes = taxes
-        self.total = total
+        self.items = items
+        self.recipt = None
 
     def get_since(self):
         return self.since
@@ -38,10 +37,23 @@ class Ticket():
         return self.sale
 
     def get_subtotal(self):
-        return self.subtotal
+        subtotal = 0
+        for el in self.items:
+            subtotal += el.get_subtotal()
+
+        return subtotal
 
     def get_taxes(self):
-        return self.taxes
+        return 0
 
     def get_total(self):
-        return self.total
+        return self.get_subtotal()
+
+    def get_recipt(self) -> TicketRecipt:
+        return self.recipt
+
+    def set_recipt(self, recipt: TicketRecipt):
+        self.recipt = recipt
+
+    def get_items(self) -> List[TicketItem]:
+        return self.items

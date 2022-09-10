@@ -2,6 +2,7 @@ from datetime import datetime
 from unittest import TestCase
 
 from src.user_config import UserConfig
+from env import constants
 
 
 class TicketItemTests(TestCase):
@@ -13,7 +14,8 @@ class TicketItemTests(TestCase):
             name='Tomas Nocetti',
             address=address,
             ia=date,
-            pto_v=1
+            pto_v=1,
+            cbe_type=constants['COD_CMP']
         )
 
         assert(t.get_address() == address)

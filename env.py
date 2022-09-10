@@ -6,7 +6,10 @@ print(f'Running in {env} mode')
 
 constants = {
     'COD_CMP': 11,
-    'BASE_QR_URL': 'https://www.afip.gob.ar/fe/qr/?p='
+    'BASE_QR_URL': 'https://www.afip.gob.ar/fe/qr/?p=',
+    'MON_ID': 'PES',
+    'MON_COTZ': 1
+
 }
 
 __testing_config = {

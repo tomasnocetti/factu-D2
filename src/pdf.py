@@ -33,15 +33,13 @@ class PdfGenerator():
     def __init__(
         self,
         user: UserConfig,
-        ticket: Ticket,
-        recipt: TicketRecipt,
-        items: List[TicketItem]
+        ticket: Ticket
     ):
         self.type = 'C'
         self.user = user
         self.ticket = ticket
-        self.items = items
-        self.recipt = recipt
+        self.recipt = ticket.get_recipt()
+        self.items = ticket.get_items()
         self.canv = Canvas('doc.pdf', bottomup=1)
 
     def inv(self, size):
@@ -293,33 +291,38 @@ class PdfGenerator():
                             self.inv(POINTER + 20 + 45), height=45, width=100)
 
 
+ticket = Ticket(
+    since=datetime.now(),
+    to=datetime.now(),
+    payment_vto=datetime.now(),
+    iva_status='Consumidor Final',
+    sale='Cuenta Corriente',
+    items=[TicketItem('Servicios Web', 18000, 1)]
+)
+
+recipt = TicketRecipt(
+    ticket_code=11,
+    pto_v=1,
+    date=datetime.now(),
+    cuit=20396423295,
+    doc_type=99,
+    doc=0,
+    ticket_n=4,
+    cae=4512302131,
+    vto_cae=datetime.now()
+)
+
+ticket.set_recipt(recipt=recipt)
+
 a = PdfGenerator(
     user=UserConfig(
         name='Tomas Nocetti',
         address='Siempre Viva 123, CABA',
-        ia=datetime.now()
-    ),
-    ticket=Ticket(
-        since=datetime.now(),
-        to=datetime.now(),
-        payment_vto=datetime.now(),
-        iva_status='Consumidor Final',
-        sale='Cuenta Corriente',
-        subtotal=280.10,
-        taxes=0,
-        total=280.10
-    ),
-    recipt=TicketRecipt(
-        ticket_code=11,
+        ia=datetime.now(),
         pto_v=1,
-        date=datetime.now(),
-        cuit=20396423295,
-        doc_type=99,
-        doc=0,
-        ticket_n=4,
-        cae=4512302131,
-        vto_cae=datetime.now()
+        cbe_type=constants['COD_CMP']
     ),
-    items=[TicketItem('Servicios Web', 18000, 1)])
+    ticket=ticket
+)
 
 a.print()
