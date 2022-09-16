@@ -8,8 +8,10 @@ constants = {
     'COD_CMP': 11,
     'BASE_QR_URL': 'https://www.afip.gob.ar/fe/qr/?p=',
     'MON_ID': 'PES',
-    'MON_COTZ': 1
-
+    'MON_COTZ': 1,
+    'CUIT_DOC_CODE': 80,
+    'CONSUMIDOR_FINAL_DOC_CODE': 99,
+    'CONSUMIDOR_FINAL_DOC_N': 0,
 }
 
 __testing_config = {

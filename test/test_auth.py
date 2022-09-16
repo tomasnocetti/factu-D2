@@ -89,7 +89,6 @@ class AuthTest(TestCase):
 
     @mock.patch("src.auth.AuthSession.retrieve_auth_from_file")
     def test_init_auth_from_file(self, m):
-
         token = 'TOKEN'
         sign = 'SIGN'
         m.return_value = AuthSession(
@@ -101,9 +100,10 @@ class AuthTest(TestCase):
         assert(auth.sign == sign)
         assert(auth.expiration_time.isoformat() == valid_time.isoformat())
 
+    @mock.patch("src.auth.AuthSession.save_auth_to_file")
     @mock.patch("src.auth.AuthSession.retrieve_auth_from_ws")
     @mock.patch("src.auth.AuthSession.retrieve_auth_from_file")
-    def test_init_auth_from_ws_due_to_file_nfound(self, mfile, mws):
+    def test_init_auth_from_ws_due_to_file_nfound(self, mfile, mws, msv):
         mfile.side_effect = FileNotFoundError
 
         token = 'TOKEN'
@@ -117,9 +117,10 @@ class AuthTest(TestCase):
         assert(auth.sign == sign)
         assert(auth.expiration_time.isoformat() == valid_time.isoformat())
 
+    @mock.patch("src.auth.AuthSession.save_auth_to_file")
     @mock.patch("src.auth.AuthSession.retrieve_auth_from_ws")
     @mock.patch("src.auth.AuthSession.retrieve_auth_from_file")
-    def test_init_auth_from_ws_due_to_file_expiredauth(self, mfile, mws):
+    def test_init_auth_from_ws_due_to_file_expiredauth(self, mfile, mws, msa):
         mfile.side_effect = ExpiredAuth
 
         token = 'TOKEN'

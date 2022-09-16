@@ -3,7 +3,7 @@ from typing import List
 from env import constants
 
 from src.auth import AuthSession
-from src.service import request_last_ticket_emitted
+from src.service import request_last_ticket_emitted, request_ticket
 from src.ticket import Ticket
 
 from src.ticket_item import TicketItem
@@ -23,14 +23,13 @@ class TicketGenerator():
         return int(date.strftime("%Y%m%d"))
 
     def get_previous_ticket_n(self):
-        # print(request_last_ticket_emitted(4, 2))
         return request_last_ticket_emitted(self.auth.generate_auth_header(), self.user.get_pto_vta())
 
     def authorize_ticket(
         self,
         ticket=Ticket
     ):
-        prev_ticket_n = self.get_previous_ticket_n(ticket)
+        prev_ticket_n = self.get_previous_ticket_n() + 1
 
         req = {
             'FeCabReq': {
@@ -40,12 +39,12 @@ class TicketGenerator():
             },
             'FeDetReq': {
                 'FECAEDetRequest': {
-                    'Concepto': 2,
-                    'DocTipo': 99,
-                    'DocNro': 0,
+                    'Concepto': int(ticket.get_type_of_ticket()),
+                    'DocTipo': ticket.get_rec_doc_code(),
+                    'DocNro': ticket.get_rec_doc_nr(),
                     'CbteDesde': prev_ticket_n,
                     'CbteHasta': prev_ticket_n,
-                    'CbteFch': 20220824,
+                    'CbteFch': self.__date_format(ticket.get_emission_date()),
                     'ImpTotal': ticket.get_total(),
                     'ImpTotConc': 0,  # debe ser 0
                     'ImpNeto': ticket.get_total(),
@@ -60,3 +59,6 @@ class TicketGenerator():
                 }
             }
         }
+
+        recipt = request_ticket(auth=self.auth.generate_auth_header(), req=req)
+        ticket.set_recipt(recipt)
