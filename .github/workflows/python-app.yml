@@ -15,6 +15,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      CERT_BUF: ${{ secrets.CERT_BUF }}
+      KEY_BUF: ${{ secrets.KEY_BUF }}
 
     steps:
       - uses: actions/checkout@v3
