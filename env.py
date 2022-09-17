@@ -36,7 +36,7 @@ __prod_config = {
 config = __testing_config if env == 'test' else __prod_config
 
 cert_buf = os.environ.get('CERT_BUF')
-
+print(cert_buf)
 if (cert_buf != None):
     cert_buf = bytes(cert_buf, 'utf-8')
 else:
@@ -44,7 +44,7 @@ else:
         cert_buf = cert_file.read()
 
 key_buf = os.environ.get('KEY_BUF')
-
+print(key_buf)
 if (key_buf != None):
     key_buf = bytes(key_buf, 'utf-8')
 else:
