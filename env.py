@@ -12,6 +12,7 @@ constants = {
     'CUIT_DOC_CODE': 80,
     'CONSUMIDOR_FINAL_DOC_CODE': 99,
     'CONSUMIDOR_FINAL_DOC_N': 0,
+    'FACTURACION_SERVICE': 'wsfe',
 }
 
 __testing_config = {

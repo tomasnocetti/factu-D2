@@ -51,9 +51,10 @@ class AuthTest(TestCase):
 
         with mock.patch('xml.etree.ElementTree.open', m):
             auth = AuthSession.retrieve_auth_from_file()
-            assert(auth.token == token)
-            assert(auth.sign == sign)
-            assert(auth.expiration_time.isoformat() == valid_time.isoformat())
+            assert(auth.ticket_service_token == token)
+            assert(auth.ticket_service_sign == sign)
+            assert(auth.ticket_service_expiration_time.isoformat()
+                   == valid_time.isoformat())
 
     def test_retrieve_auth_from_file_raises_expired_error(self):
 
@@ -83,9 +84,9 @@ class AuthTest(TestCase):
         m_open().__enter__().read.side_effect = [cert_buf, key_buf]
         auth = AuthSession.retrieve_auth_from_ws()
 
-        assert(auth.token == res.get_token())
-        assert(auth.sign == res.get_sign())
-        assert(auth.expiration_time == res.get_expiration())
+        assert(auth.ticket_service_token == res.get_token())
+        assert(auth.ticket_service_sign == res.get_sign())
+        assert(auth.ticket_service_expiration_time == res.get_expiration())
 
     @mock.patch("src.auth.AuthSession.retrieve_auth_from_file")
     def test_init_auth_from_file(self, m):
@@ -96,9 +97,10 @@ class AuthTest(TestCase):
 
         auth = AuthSession.init()
 
-        assert(auth.token == token)
-        assert(auth.sign == sign)
-        assert(auth.expiration_time.isoformat() == valid_time.isoformat())
+        assert(auth.ticket_service_token == token)
+        assert(auth.ticket_service_sign == sign)
+        assert(auth.ticket_service_expiration_time.isoformat()
+               == valid_time.isoformat())
 
     @mock.patch("src.auth.AuthSession.save_auth_to_file")
     @mock.patch("src.auth.AuthSession.retrieve_auth_from_ws")
@@ -113,9 +115,10 @@ class AuthTest(TestCase):
 
         auth = AuthSession.init()
 
-        assert(auth.token == token)
-        assert(auth.sign == sign)
-        assert(auth.expiration_time.isoformat() == valid_time.isoformat())
+        assert(auth.ticket_service_token == token)
+        assert(auth.ticket_service_sign == sign)
+        assert(auth.ticket_service_expiration_time.isoformat()
+               == valid_time.isoformat())
 
     @mock.patch("src.auth.AuthSession.save_auth_to_file")
     @mock.patch("src.auth.AuthSession.retrieve_auth_from_ws")
@@ -130,9 +133,10 @@ class AuthTest(TestCase):
 
         auth = AuthSession.init()
 
-        assert(auth.token == token)
-        assert(auth.sign == sign)
-        assert(auth.expiration_time.isoformat() == valid_time.isoformat())
+        assert(auth.ticket_service_token == token)
+        assert(auth.ticket_service_sign == sign)
+        assert(auth.ticket_service_expiration_time.isoformat()
+               == valid_time.isoformat())
 
     @mock.patch("src.auth.AuthSession.save_auth_to_file")
     @mock.patch("src.auth.AuthSession.retrieve_auth_from_ws")
