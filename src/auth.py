@@ -1,4 +1,6 @@
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
+import pytz
+
 import os
 import xml.etree.ElementTree as ET
 
@@ -13,6 +15,9 @@ if (not os.path.exists(direct)):
 
 class ExpiredAuth(Exception):
     pass
+
+
+now = datetime.now(pytz.timezone('America/Argentina/Buenos_Aires'))
 
 
 class AuthSession():
@@ -61,8 +66,8 @@ class AuthSession():
         solicitudXML = ET.parse('templates/solicitud.xml')
 
         one_minute = timedelta(minutes=1)
-        generationTime = datetime.now() - one_minute
-        expirationTime = datetime.now() + one_minute
+        generationTime = now - one_minute
+        expirationTime = now + one_minute
 
         header = solicitudXML.getroot()[0]
         service = solicitudXML.getroot()[1]

@@ -2,3 +2,4 @@ cryptography==37.0.4
 qrcode==7.3.1
 reportlab==3.6.11
 zeep==4.1.0
+pytz==2022.2.1
