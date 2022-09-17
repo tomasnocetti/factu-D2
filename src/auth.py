@@ -32,13 +32,7 @@ class AuthSession():
         return cls(token, sign, expiration_time_item)
 
     @classmethod
-    def retrieve_auth_from_ws(cls):
-        with open(config['CERTIFICATE'], 'rb') as cert_file:
-            cert_buf = cert_file.read()
-
-        with open(config['PRIVATE_KEY'], 'rb') as key_file:
-            key_buf = key_file.read()
-
+    def retrieve_auth_from_ws(cls, cert_buf, key_buf):
         buffer = cls.__build_request_xml()
         cms = build_cms(cert_buf, key_buf, buffer)
         request_payload = cls.__build_ta_request(cms)
@@ -52,13 +46,13 @@ class AuthSession():
         )
 
     @classmethod
-    def init(cls):
+    def init(cls, cert_buf, key_buf):
         try:
             return cls.retrieve_auth_from_file()
         except (FileNotFoundError, ExpiredAuth):
             pass
 
-        auth = cls.retrieve_auth_from_ws()
+        auth = cls.retrieve_auth_from_ws(cert_buf, key_buf)
         auth.save_auth_to_file()
         return auth
 
@@ -94,18 +88,18 @@ class AuthSession():
         return ET.tostring(myroot, encoding='unicode')
 
     def __init__(self, token, sign, expiration_time) -> None:
-        self.ticket_service_token = token
-        self.ticket_service_sign = sign
-        self.ticket_service_expiration_time = expiration_time
+        self.token = token
+        self.sign = sign
+        self.expiration_time = expiration_time
 
     def save_auth_to_file(self):
         data = ET.Element('authData')
         token_item = ET.SubElement(data, 'token')
         sign_item = ET.SubElement(data, 'sign')
         expiration_time_item = ET.SubElement(data, 'expirationTime')
-        token_item.text = self.ticket_service_token
-        sign_item.text = self.ticket_service_sign
-        expiration_time_item.text = self.ticket_service_expiration_time.isoformat()
+        token_item.text = self.token
+        sign_item.text = self.sign
+        expiration_time_item.text = self.expiration_time.isoformat()
         data = ET.tostring(data, encoding='unicode')
 
         with open(config['TMP_AUTH_PATH'], "w") as auth_file:
@@ -113,7 +107,7 @@ class AuthSession():
 
     def generate_auth_header(self):
         return {
-            'Token': self.ticket_service_token,
-            'Sign': self.ticket_service_sign,
+            'Token': self.token,
+            'Sign': self.sign,
             'Cuit': config['CUIT'],
         }

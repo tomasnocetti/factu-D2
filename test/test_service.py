@@ -2,7 +2,7 @@
 import json
 from unittest import TestCase, main, mock
 
-from src.service import AlreadyAuthenticated, request_ta, request_last_ticket_emitted, request_ticket
+from src.service import AlreadyAuthenticated, request_ta, request_last_ticket_emitted, request_ticket, request_user_pto_vta
 from src.ticket_recipt import TicketRecipt
 
 
@@ -91,6 +91,19 @@ class ServiceTest(TestCase):
 
         with self.assertRaises(Exception) as exc:
             request_ticket(auth_header, payload)
+
+    @mock.patch('src.service.client')
+    def test_success_call_get_pto_vtas(self, mock_post):
+        with open('test/responses/ptoVtasResponseSuccess.json', 'r') as file:
+            response = json.load(file)
+
+        mock_client = mock.Mock(return_value=response)
+
+        mock_post.service.FEParamGetPtosVenta = mock_client
+
+        response = request_user_pto_vta("payload")
+
+        assert(len(response) == 2)
 
 
 if __name__ == "__main__":

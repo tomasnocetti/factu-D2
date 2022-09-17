@@ -11,6 +11,13 @@ valid_time = datetime.now().astimezone() + delta
 invalid_time = datetime.now().astimezone() - delta
 
 
+with open('test/credentials/certificado.pem', 'rb') as cert_file:
+    cert_buf = cert_file.read()
+
+with open('test/credentials/clave.key', 'rb') as key_file:
+    key_buf = key_file.read()
+
+
 class AuthTest(TestCase):
 
     @mock.patch("xml.etree.ElementTree.open", new_callable=mock.mock_open())
@@ -51,9 +58,9 @@ class AuthTest(TestCase):
 
         with mock.patch('xml.etree.ElementTree.open', m):
             auth = AuthSession.retrieve_auth_from_file()
-            assert(auth.ticket_service_token == token)
-            assert(auth.ticket_service_sign == sign)
-            assert(auth.ticket_service_expiration_time.isoformat()
+            assert(auth.token == token)
+            assert(auth.sign == sign)
+            assert(auth.expiration_time.isoformat()
                    == valid_time.isoformat())
 
     def test_retrieve_auth_from_file_raises_expired_error(self):
@@ -69,24 +76,16 @@ class AuthTest(TestCase):
             with self.assertRaises(ExpiredAuth):
                 AuthSession.retrieve_auth_from_file()
 
-    @mock.patch("src.auth.open", new_callable=mock.mock_open())
     @mock.patch("src.auth.request_ta")
-    def test_retrieve_auth_from_ws(self, m, m_open):
+    def test_retrieve_auth_from_ws(self, m):
         res = TaResponse('TOKEN', 'SIGN', datetime.now())
         m.return_value = res
 
-        with open('test/credentials/certificado.pem', 'rb') as cert_file:
-            cert_buf = cert_file.read()
+        auth = AuthSession.retrieve_auth_from_ws(cert_buf, key_buf)
 
-        with open('test/credentials/clave.key', 'rb') as key_file:
-            key_buf = key_file.read()
-
-        m_open().__enter__().read.side_effect = [cert_buf, key_buf]
-        auth = AuthSession.retrieve_auth_from_ws()
-
-        assert(auth.ticket_service_token == res.get_token())
-        assert(auth.ticket_service_sign == res.get_sign())
-        assert(auth.ticket_service_expiration_time == res.get_expiration())
+        assert(auth.token == res.get_token())
+        assert(auth.sign == res.get_sign())
+        assert(auth.expiration_time == res.get_expiration())
 
     @mock.patch("src.auth.AuthSession.retrieve_auth_from_file")
     def test_init_auth_from_file(self, m):
@@ -95,11 +94,11 @@ class AuthTest(TestCase):
         m.return_value = AuthSession(
             token=token, sign=sign, expiration_time=valid_time)
 
-        auth = AuthSession.init()
+        auth = AuthSession.init(cert_buf=cert_buf, key_buf=key_buf)
 
-        assert(auth.ticket_service_token == token)
-        assert(auth.ticket_service_sign == sign)
-        assert(auth.ticket_service_expiration_time.isoformat()
+        assert(auth.token == token)
+        assert(auth.sign == sign)
+        assert(auth.expiration_time.isoformat()
                == valid_time.isoformat())
 
     @mock.patch("src.auth.AuthSession.save_auth_to_file")
@@ -113,11 +112,11 @@ class AuthTest(TestCase):
         mws.return_value = AuthSession(
             token=token, sign=sign, expiration_time=valid_time)
 
-        auth = AuthSession.init()
+        auth = AuthSession.init(cert_buf=cert_buf, key_buf=key_buf)
 
-        assert(auth.ticket_service_token == token)
-        assert(auth.ticket_service_sign == sign)
-        assert(auth.ticket_service_expiration_time.isoformat()
+        assert(auth.token == token)
+        assert(auth.sign == sign)
+        assert(auth.expiration_time.isoformat()
                == valid_time.isoformat())
 
     @mock.patch("src.auth.AuthSession.save_auth_to_file")
@@ -131,11 +130,11 @@ class AuthTest(TestCase):
         mws.return_value = AuthSession(
             token=token, sign=sign, expiration_time=valid_time)
 
-        auth = AuthSession.init()
+        auth = AuthSession.init(cert_buf=cert_buf, key_buf=key_buf)
 
-        assert(auth.ticket_service_token == token)
-        assert(auth.ticket_service_sign == sign)
-        assert(auth.ticket_service_expiration_time.isoformat()
+        assert(auth.token == token)
+        assert(auth.sign == sign)
+        assert(auth.expiration_time.isoformat()
                == valid_time.isoformat())
 
     @mock.patch("src.auth.AuthSession.save_auth_to_file")
@@ -149,7 +148,7 @@ class AuthTest(TestCase):
         mws.return_value = AuthSession(
             token=token, sign=sign, expiration_time=valid_time)
 
-        AuthSession.init()
+        AuthSession.init(cert_buf=cert_buf, key_buf=key_buf)
 
         msaf.assert_called_once()
 

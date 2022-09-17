@@ -6,7 +6,7 @@ from src.ticket import TYPE_OF_TICKET, Ticket
 from src.ticket_generator import TicketGenerator
 from src.ticket_item import TicketItem
 from src.user_config import UserConfig
-from env import constants
+from env import constants, cert_buf, key_buf
 
 
 class TicketGeneratorTests(TestCase):
@@ -19,7 +19,7 @@ class TicketGeneratorTests(TestCase):
             pto_v=1,
             cbe_type=constants['COD_CMP']
         )
-        auth = AuthSession.init()
+        auth = AuthSession.init(cert_buf=cert_buf, key_buf=key_buf)
 
         t = TicketGenerator(
             user_conf,
@@ -35,7 +35,7 @@ class TicketGeneratorTests(TestCase):
             pto_v=1,
             cbe_type=constants['COD_CMP']
         )
-        auth = AuthSession.init()
+        auth = AuthSession.init(cert_buf=cert_buf, key_buf=key_buf)
 
         t = TicketGenerator(
             user_conf,

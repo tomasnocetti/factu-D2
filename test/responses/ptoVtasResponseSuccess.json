@@ -1,0 +1,20 @@
+{
+  "ResultGet": {
+    "PtoVenta": [
+      {
+        "Nro": 2,
+        "EmisionTipo": "CAE - Monotributo",
+        "Bloqueado": "N",
+        "FchBaja": "NULL"
+      },
+      {
+        "Nro": 3,
+        "EmisionTipo": "CAE - 2",
+        "Bloqueado": "N",
+        "FchBaja": "NULL"
+      }
+    ]
+  },
+  "Errors": null,
+  "Events": null
+}

@@ -1,8 +1,11 @@
+from typing import List
 import requests
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from env import config, constants
 from zeep import Client
+
+from src.pto_vto import PtoVta
 from .ticket_recipt import TicketRecipt
 
 client = Client(config['FACTURACION_WSDL'])
@@ -101,3 +104,23 @@ def request_last_ticket_emitted(auth: dict, pto_v: int) -> int:
     )
 
     return int(res['CbteNro'])
+
+
+def request_user_pto_vta(auth: dict) -> List[PtoVta]:
+
+    res = client.service.FEParamGetPtosVenta(
+        Auth=auth,
+    )
+
+    errors = res['Errors']
+
+    if (errors is not None):
+        err = errors['Err'][0]
+        raise Exception(f'code: {err["Code"]} \n msg: {err["Msg"]}')
+
+    pto_vtas = []
+
+    for el in res['ResultGet']['PtoVenta']:
+        pto_vtas.append(PtoVta(el['Nro'], el['EmisionTipo']))
+
+    return pto_vtas
