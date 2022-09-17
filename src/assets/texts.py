@@ -1,7 +1,3 @@
-WELCOME_MSG = """
-
-"""
-
 R2D2_MSG = """
 ----------------------------------------------------------------
                                                          .---.
@@ -14,6 +10,11 @@ R2D2_MSG = """
                                                       /___\ /___\
 
 ----------------------------------------------------------------
-Bienvenid@ a Factu-D2
+Hola soy Factu-D2
 Tu CLI de Facturación para AFIP
 """
+
+WAIT_MSG = 'Esperá que valido que tengas la configuración necesaria.'
+
+VALIDATION_CONFIG_MSG = 'Configuración de autenticación encontrada.'
+VALIDATION_AFIP_MSG = 'AFIP Funcionando.'
