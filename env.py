@@ -36,11 +36,17 @@ __prod_config = {
 config = __testing_config if env == 'test' else __prod_config
 
 cert_buf = os.environ.get('CERT_BUF')
-if (cert_buf == None):
+
+if (cert_buf != None):
+    cert_buf = bytes(cert_buf, 'utf-8')
+else:
     with open(config['CERTIFICATE'], 'rb') as cert_file:
         cert_buf = cert_file.read()
 
 key_buf = os.environ.get('KEY_BUF')
-if (key_buf == None):
+
+if (key_buf != None):
+    key_buf = bytes(key_buf, 'utf-8')
+else:
     with open(config['PRIVATE_KEY'], 'rb') as key_file:
         key_buf = key_file.read()
